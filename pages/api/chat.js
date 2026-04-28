@@ -38,7 +38,21 @@ export default async function handler(req, res) {
       return res.status(response.status).json({ error: errMsg });
     }
 
-    const text = data.choices?.[0]?.message?.content || "";
+    // Handle both string content and array content (varies by model)
+    const rawContent = data.choices?.[0]?.message?.content;
+    let text = "";
+    if (typeof rawContent === "string") {
+      text = rawContent;
+    } else if (Array.isArray(rawContent)) {
+      text = rawContent
+        .filter(block => block.type === "text")
+        .map(block => block.text)
+        .join("");
+    }
+
+    if (!text) {
+      return res.status(500).json({ error: "The model returned an empty response. Please try again." });
+    }
 
     return res.status(200).json({
       content: [{ type: "text", text }],
