@@ -2,31 +2,55 @@ export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: "ANTHROPIC_API_KEY is not set in environment variables." });
+    return res.status(500).json({ error: "GEMINI_API_KEY is not set in environment variables." });
   }
+
   try {
     const { messages, system } = req.body;
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
+
+    // Convert Anthropic message format to Gemini format
+    // Anthropic: { role: "user"|"assistant", content: "text" }
+    // Gemini:    { role: "user"|"model",      parts: [{ text: "text" }] }
+    const contents = messages.map(m => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
+
+    const body = {
+      system_instruction: system ? { parts: [{ text: system }] } : undefined,
+      contents,
+      generationConfig: {
+        maxOutputTokens: 1500,
+        temperature: 0.7,
       },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1500,
-        system,
-        messages,
-      }),
-    });
+    };
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }
+    );
+
     const data = await response.json();
+
     if (!response.ok) {
-      return res.status(response.status).json({ error: data.error?.message || "Anthropic API error" });
+      const errMsg = data.error?.message || `Gemini API error ${response.status}`;
+      return res.status(response.status).json({ error: errMsg });
     }
-    return res.status(200).json(data);
+
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+
+    // Return in the same shape the frontend already expects
+    return res.status(200).json({
+      content: [{ type: "text", text }],
+    });
+
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
