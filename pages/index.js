@@ -1,13 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Head from "next/head";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// FONT  ← FIX: use CSS variable so next/font/local resolves correctly.
-//        Do NOT use the literal font name "'NeueKabel'" in inline styles -
-//        next/font/local hashes the internal family name and exposes it via
-//        the CSS variable --font-neue-kabel set on _app.js wrapper.
-// ─────────────────────────────────────────────────────────────────────────────
-const FONT = "var(--font-neue-kabel), 'Barlow', sans-serif";
+const FONT = "'NeueKabel', 'Barlow', sans-serif";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 const Tk = {
@@ -499,11 +493,6 @@ export default function OKRCoach() {
 
           {/* Messages area with ambient produce */}
           <div style={{ flex: 1, position: "relative", overflow: "hidden", minHeight: 420 }}>
-
-            {/* ── Ambient produce ── FIX: banana top:60, avocado top:310 so they don't overlap */}
-            <img src={IMG.banana_slice} alt="" style={{ position: "absolute", right: -28, top: 60,  width: 120, opacity: 0.10, transform: "rotate(18deg)",  pointerEvents: "none", zIndex: 0 }} />
-            <img src={IMG.avocado}      alt="" style={{ position: "absolute", right: -22, top: 310, width: 90,  opacity: 0.10, transform: "rotate(-14deg)", pointerEvents: "none", zIndex: 0 }} />
-            <img src={IMG.pumpkin}      alt="" style={{ position: "absolute", right: -50, bottom: -30, width: 180, opacity: 0.09, transform: "rotate(-8deg)",  pointerEvents: "none", zIndex: 0 }} />
 
             {/* Scrollable messages */}
             <div style={{ position: "absolute", inset: 0, overflowY: "auto", padding: "30px 28px 16px", display: "flex", flexDirection: "column", gap: 24, zIndex: 1 }}>
