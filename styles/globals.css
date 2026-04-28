@@ -13,12 +13,13 @@
   font-display: block;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: border-box; font-style: normal; }
 html, body {
   margin: 0;
   padding: 0;
   background: #FBF7E1;
   font-family: 'NeueKabel', 'Barlow', sans-serif;
+  font-style: normal;
 }
 strong { font-weight: 700; }
 ul { margin: 6px 0 4px 18px; padding: 0; }
