@@ -12,7 +12,10 @@ const neueKabel = localFont({
 
 export default function App({ Component, pageProps }) {
   return (
-    <main className={neueKabel.className}>
+    <main
+      className={neueKabel.className}
+      style={{ minHeight: '100vh', background: '#FBF7E1' }}
+    >
       <Component {...pageProps} />
     </main>
   );
