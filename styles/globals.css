@@ -14,7 +14,12 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; background: #FBF7E1; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #FBF7E1;
+  font-family: 'NeueKabel', 'Barlow', sans-serif;
+}
 strong { font-weight: 700; }
 ul { margin: 6px 0 4px 18px; padding: 0; }
 li { margin-bottom: 3px; }
