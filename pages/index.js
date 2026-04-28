@@ -60,7 +60,7 @@ export default function OKRChatbot(){
         <img src={IMG.kale_leaf}    alt="" style={{position:"absolute",left:-34, bottom:90, width:130,opacity:.10,transform:"rotate(-18deg)",pointerEvents:"none",userSelect:"none"}}/>
         <img src={IMG.banana_slice} alt="" style={{position:"absolute",right:-28,top:130,  width:120,opacity:.10,transform:"rotate(18deg)", pointerEvents:"none",userSelect:"none"}}/>
         <img src={IMG.pumpkin}      alt="" style={{position:"absolute",right:-50,bottom:-30,width:180,opacity:.09,transform:"rotate(-8deg)", pointerEvents:"none",userSelect:"none"}}/>
-        <img src={IMG.avocado}      alt="" style={{position:"absolute",left:-22, top:180,   width:90, opacity:.10,transform:"rotate(14deg)", pointerEvents:"none",userSelect:"none"}}/>
+        <img src={IMG.avocado}      alt="" style={{position:"absolute",right:-22,top:180,   width:90, opacity:.10,transform:"rotate(-14deg)", pointerEvents:"none",userSelect:"none"}}/>
         {drag&&<div style={{position:"absolute",inset:0,zIndex:50,background:`${Tk.sproutSoft}cc`,border:`2px dashed ${Tk.sprout}`,borderRadius:18,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:10,pointerEvents:"none"}}><img src={IMG.apple_half} alt="" style={{width:48,height:48,objectFit:"contain"}}/><div style={{fontFamily:FONT,fontSize:16,fontWeight:700,color:Tk.moss}}>Drop your document here</div><div style={{fontSize:12,color:Tk.muted}}>PDF, Word, Excel, or plain text</div></div>}
         {/* Progress bar - zIndex:2 renders above produce */}
         <div style={{height:3,background:Tk.lineSoft,flexShrink:0,position:"relative",zIndex:2}}><div style={{height:"100%",width:`${progress}%`,background:Tk.sprout,transition:"width 0.4s ease"}}/></div>
