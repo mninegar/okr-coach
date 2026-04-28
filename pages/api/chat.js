@@ -25,7 +25,7 @@ export default async function handler(req, res) {
         "X-Title": "OKR Coach",
       },
       body: JSON.stringify({
-        model: "meta-llama/llama-3.1-8b-instruct:free",
+        model: "openrouter/free",
         messages: openRouterMessages,
         max_tokens: 1500,
       }),
