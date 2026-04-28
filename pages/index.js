@@ -300,7 +300,7 @@ function Welcome({ onAction }) {
       <div style={{ fontSize: 10.5, color: Tk.muted, marginBottom: 10, textTransform: "uppercase", letterSpacing: 1.6, fontWeight: 800, fontFamily: FONT }}>
         Coach
       </div>
-      <div style={{ fontFamily: FONT, fontWeight: 700, color: Tk.ink, lineHeight: 1.1, marginBottom: 14 }}>
+      <div style={{ fontFamily: FONT, fontWeight: 700, fontStyle: "normal", color: Tk.ink, lineHeight: 1.1, marginBottom: 14 }}>
         <span style={{ fontSize: 32, display: "block" }}>Hi there, Farmer.</span>
         <span style={{ fontSize: 32, display: "block" }}>
           <span style={{ color: Tk.sprout, position: "relative", display: "inline-block" }}>
@@ -478,7 +478,7 @@ export default function OKRCoach() {
               </div>
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: FONT, fontSize: 19, fontWeight: 700, letterSpacing: -0.3, lineHeight: 1, color: Tk.ink }}>OKR Coach</div>
+              <div style={{ fontFamily: FONT, fontSize: 19, fontWeight: 700, fontStyle: "normal", letterSpacing: -0.3, lineHeight: 1, color: Tk.ink }}>OKR Coach</div>
               <div style={{ fontSize: 11, color: Tk.muted, marginTop: 4, fontFamily: FONT }}>Goal-setting strategy support for Farmers, people leaders, and teams</div>
             </div>
             <button style={pillBtn()} onClick={restart}
