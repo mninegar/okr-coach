@@ -54,8 +54,8 @@ export default function OKRChatbot(){
   const restart=useCallback(()=>{setMsgs([{role:"bot",isWelcome:true}]);setHistory([]);setInput("");setProgress(5);clearDoc();},[clearDoc]);
   const onKey=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}};
   return(<><Head><title>OKR Coach - Once Upon a Farm</title></Head>
-    <div style={{minHeight:"100vh",background:Tk.cream,display:"flex",justifyContent:"center",alignItems:"flex-start",padding:"0 0 32px 0",fontFamily:FONT}}>
-      <div onDragEnter={onDE} onDragLeave={onDL} onDragOver={onDO} onDrop={onDrop} style={{width:"100%",maxWidth:760,background:Tk.cream,display:"flex",flexDirection:"column",borderRadius:18,overflow:"hidden",marginTop:24,border:drag?`1.5px solid ${Tk.sprout}`:`0.5px solid ${Tk.line}`,position:"relative",transition:"border-color 0.15s"}}>
+    <div style={{minHeight:"100vh",background:Tk.cream,display:"flex",justifyContent:"center",alignItems:"flex-start",padding:"24px 16px 32px",fontFamily:FONT}}>
+      <div onDragEnter={onDE} onDragLeave={onDL} onDragOver={onDO} onDrop={onDrop} style={{width:"100%",maxWidth:760,background:Tk.cream,display:"flex",flexDirection:"column",borderRadius:18,overflow:"hidden",border:drag?`1.5px solid ${Tk.sprout}`:`0.5px solid ${Tk.line}`,position:"relative",transition:"border-color 0.15s"}}>
         {/* Ambient produce - exact positions from layout1. No zIndex = renders below zIndex:2 content */}
         <img src={IMG.banana_slice} alt="" style={{position:"absolute",right:-28,top:130,  width:120,opacity:.10,transform:"rotate(18deg)", pointerEvents:"none",userSelect:"none"}}/>
         <img src={IMG.pumpkin}      alt="" style={{position:"absolute",right:-50,bottom:-30,width:180,opacity:.09,transform:"rotate(-8deg)", pointerEvents:"none",userSelect:"none"}}/>
