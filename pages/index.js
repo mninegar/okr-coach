@@ -451,7 +451,7 @@ export default function OKRCoach() {
 
         {/* Card */}
         <div
-          style={{ width: "100%", maxWidth: 720, minHeight: "100vh", background: Tk.paper, display: "flex", flexDirection: "column", position: "relative", border: drag ? `1.5px solid ${Tk.sprout}` : `0.5px solid ${Tk.line}`, transition: "border-color 0.15s" }}
+          style={{ width: "100%", maxWidth: 720, minHeight: "100vh", background: Tk.paper, display: "flex", flexDirection: "column", position: "relative", borderRadius: 12, border: drag ? `1.5px solid ${Tk.sprout}` : `0.5px solid ${Tk.line}`, overflow: "hidden", transition: "border-color 0.15s" }}
           onDragEnter={handleDragEnter} onDragLeave={handleDragLeave} onDragOver={handleDragOver} onDrop={handleDrop}
         >
 
