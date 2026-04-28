@@ -2,14 +2,16 @@
   font-family: 'NeueKabel';
   font-weight: 400;
   font-style: normal;
-  src: url('/fonts/NeueKabel-Regular.otf') format('opentype');
+  src: url('https://db.onlinewebfonts.com/t/02408ccd8efcf169db4e41d6e0551118.woff2') format('woff2'),
+       url('https://db.onlinewebfonts.com/t/02408ccd8efcf169db4e41d6e0551118.woff') format('woff');
   font-display: block;
 }
 @font-face {
   font-family: 'NeueKabel';
   font-weight: 700;
   font-style: normal;
-  src: url('/fonts/NeueKabel-Bold.otf') format('opentype');
+  src: url('https://db.onlinewebfonts.com/t/600ab0b5dbeba51a9434c9461db82573.woff2') format('woff2'),
+       url('https://db.onlinewebfonts.com/t/600ab0b5dbeba51a9434c9461db82573.woff') format('woff');
   font-display: block;
 }
 *, *::before, *::after {
@@ -18,15 +20,11 @@
   font-weight: 400;
   font-style: normal;
 }
-html, body {
-  margin: 0;
-  padding: 0;
-  background: #FBF7E1;
-}
+html, body { margin: 0; padding: 0; background: #FBF7E1; }
 strong { font-weight: 700; }
 button { font-family: 'NeueKabel', sans-serif; font-weight: 400; }
 ul { margin: 6px 0 4px 18px; padding: 0; }
 li { margin-bottom: 3px; }
-@keyframes dot { 0%,60%,100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-5px); opacity: 1; } }
-@keyframes mi { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes dot { 0%,60%,100%{transform:translateY(0);opacity:.5} 30%{transform:translateY(-5px);opacity:1} }
+@keyframes mi { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
 .mi { animation: mi 0.2s ease both; }
