@@ -1,25 +1,26 @@
+/* Nunito from Google Fonts - upright geometric sans-serif, nearly identical feel to Neue Kabel */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=block');
+
+/* Keep NeueKabel declared so any explicit references don't break, but Nunito is the actual font */
 @font-face {
   font-family: 'NeueKabel';
   font-weight: 400;
   font-style: normal;
   src: url('/fonts/NeueKabel-Regular.otf') format('opentype');
-  font-display: block;
-}
-@font-face {
-  font-family: 'NeueKabel';
-  font-weight: 700;
-  font-style: normal;
-  src: url('/fonts/NeueKabel-Bold.otf') format('opentype');
-  font-display: block;
+  font-display: swap;
 }
 
-*, *::before, *::after { box-sizing: border-box; font-style: normal; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  font-style: normal;
+}
 html, body {
   margin: 0;
   padding: 0;
   background: #FBF7E1;
-  font-family: 'NeueKabel', 'Barlow', sans-serif;
+  font-family: 'Nunito', 'Neue Kabel', 'NeueKabel', sans-serif;
   font-style: normal;
+  font-synthesis: none;
 }
 strong { font-weight: 700; }
 ul { margin: 6px 0 4px 18px; padding: 0; }
