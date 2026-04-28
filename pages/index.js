@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import Head from "next/head";
 
-const FONT = "'NeueKabel', 'Barlow', sans-serif";
+const FONT = "'Nunito', 'NeueKabel', sans-serif";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 const Tk = {
