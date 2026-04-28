@@ -246,9 +246,8 @@ export default function OKRChatbot() {
           </div>
           <div style={{flex:1,position:"relative",overflow:"hidden",minHeight:420}}>
             <div style={{position:"absolute",left:-20,bottom:60,width:110,opacity:.08,transform:"rotate(-18deg)",pointerEvents:"none",zIndex:0}}><Img k="kale_leaf" w={110} h={110}/></div>
-            <div style={{position:"absolute",right:-10,top:100,width:100,opacity:.08,transform:"rotate(18deg)",pointerEvents:"none",zIndex:0}}><Img k="banana_slice" w={100} h={100}/></div>
-            <div style={{position:"absolute",right:-20,bottom:0,width:140,opacity:.07,transform:"rotate(-8deg)",pointerEvents:"none",zIndex:0}}><Img k="pumpkin" w={140} h={140}/></div>
-            <div style={{position:"absolute",right:10,top:160,width:80,opacity:.08,transform:"rotate(-14deg)",pointerEvents:"none",zIndex:0}}><Img k="avocado" w={80} h={80}/></div>
+           <div style={{position:"absolute",right:-40,top:60,width:90,opacity:.07,transform:"rotate(18deg)",pointerEvents:"none",zIndex:0}}><Img k="banana_slice" w={90} h={90}/></div>
+<div style={{position:"absolute",right:-50,bottom:-20,width:160,opacity:.06,transform:"rotate(-8deg)",pointerEvents:"none",zIndex:0}}><Img k="pumpkin" w={160} h={160}/></div>
             <div style={{position:"relative",zIndex:1,height:"100%",overflow:"auto",padding:"30px 28px 16px",display:"flex",flexDirection:"column",gap:24}}>
               <div style={{display:"flex",flexDirection:"column",gap:24}}>
                 {msgs.map((m,i)=><div key={i} className="mi">{m.role==="user"?<UserMsg text={m.text} docWords={docWords} sheets={docSheets}/>:m.isWelcome?<Welcome onAction={onChip}/>:<CoachMsg html={m.html} raw={m.raw} isTyping={m.typing} chips={m.chips} onChip={onChip}/>}</div>)}
