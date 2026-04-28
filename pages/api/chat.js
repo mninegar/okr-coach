@@ -16,42 +16,55 @@ export default async function handler(req, res) {
       ...messages,
     ];
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://okr-coach-blue.vercel.app",
-        "X-Title": "OKR Coach",
-      },
-      body: JSON.stringify({
-        model: "openrouter/free",
-        messages: openRouterMessages,
-        max_tokens: 1500,
-      }),
-    });
+    // 25-second hard timeout so it never hangs forever
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 25000);
+
+    let response;
+    try {
+      response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
+          "HTTP-Referer": "https://okr-coach-blue.vercel.app",
+          "X-Title": "OKR Coach",
+        },
+        body: JSON.stringify({
+          model: "meta-llama/llama-3.3-70b-instruct:free",
+          messages: openRouterMessages,
+          max_tokens: 1500,
+          temperature: 0.7,
+        }),
+        signal: controller.signal,
+      });
+    } catch (fetchErr) {
+      if (fetchErr.name === "AbortError") {
+        return res.status(504).json({ error: "The coach took too long to respond. Please try again." });
+      }
+      throw fetchErr;
+    } finally {
+      clearTimeout(timeout);
+    }
 
     const data = await response.json();
 
     if (!response.ok) {
-      const errMsg = data.error?.message || `OpenRouter API error ${response.status}`;
+      const errMsg = data.error?.message || `API error ${response.status}`;
       return res.status(response.status).json({ error: errMsg });
     }
 
-    // Handle both string content and array content (varies by model)
+    // Handle both string and array content formats
     const rawContent = data.choices?.[0]?.message?.content;
     let text = "";
     if (typeof rawContent === "string") {
-      text = rawContent;
+      text = rawContent.trim();
     } else if (Array.isArray(rawContent)) {
-      text = rawContent
-        .filter(block => block.type === "text")
-        .map(block => block.text)
-        .join("");
+      text = rawContent.filter(b => b.type === "text").map(b => b.text).join("").trim();
     }
 
     if (!text) {
-      return res.status(500).json({ error: "The model returned an empty response. Please try again." });
+      return res.status(500).json({ error: "The coach returned an empty response. Please try again." });
     }
 
     return res.status(200).json({
