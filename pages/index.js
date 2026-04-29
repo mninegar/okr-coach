@@ -69,6 +69,14 @@ COACHING STYLE:
 - Push back gently when someone submits tasks as OKRs. Say something like: "This looks more like a daily task than an OKR. Let us turn it into a real goal."
 - Offer to generate an Excel template when the user seems ready to finalize their OKRs.
 - When doing a review, structure your reply with: "Here is my read on your draft." followed by "What is strong:" and "What to sharpen:" sections.
+- After completing a coaching task (finishing a review, generating an Excel template, wrapping up a drafting session, or answering a question fully), always offer a warm closing. Ask "Is there anything else I can help you grow today?" If the Farmer says no or signals they are done, close warmly and on-brand. Examples of good on-brand closings (vary these, do not repeat the same one):
+  - "Happy farming. Here's to a strong harvest this half."
+  - "Go grow something great. The Barn is rooting for you."
+  - "Best of luck out in the field. You've got this."
+  - "Wishing you a great season. Now go make it count."
+  - "That's a strong plan. Go plant it and watch it grow."
+  Always match the warmth and mission of Once Upon a Farm: purpose-driven, growth-oriented, and genuinely encouraging.
+
 - CRITICAL: When generating an Excel template or OKR file, you MUST output the actual data as markdown pipe tables (using | column | column | format). Do NOT describe the file or provide a fake download link. Output the real table rows so the app can create the actual .xlsx file. Use #### Sheet Name headings before each table. Example format:
 #### 2H 2026 OKRs
 | Objective | Key Result | Metric | Deadline | Progress |
@@ -247,26 +255,40 @@ function parseMarkdownTables(text) {
 
 function ExcelDownloadButton({ raw }) {
   const [done, setDone] = React.useState(false);
-  const download = () => {
-    if (typeof XLSX === "undefined") { alert("Excel library not loaded yet - please wait a moment and try again."); return; }
-    const sheets = parseMarkdownTables(raw);
-    if (sheets.length === 0) { alert("No table data found to export."); return; }
-    const wb = XLSX.utils.book_new();
-    sheets.forEach(({ name, rows }) => {
-      const ws = XLSX.utils.aoa_to_sheet(rows);
-      // Style header row green
-      const range = XLSX.utils.decode_range(ws["!ref"] || "A1");
-      for (let c = range.s.c; c <= range.e.c; c++) {
-        const cell = ws[XLSX.utils.encode_cell({ r: 0, c })];
-        if (cell) {
-          cell.s = { fill: { fgColor: { rgb: "4CB74A" } }, font: { bold: true, color: { rgb: "FFFFFF" } } };
-        }
+  const [loading, setLoading] = React.useState(false);
+
+  const download = async () => {
+    setLoading(true);
+    try {
+      // Extract metadata from response text
+      const periodMatch = raw.match(/\b(1H|2H)\s*(20\d\d)\b/i);
+      const period = periodMatch ? `${periodMatch[1].toUpperCase()} ${periodMatch[2]} OKRs` : "OKRs";
+      const nameMatch = raw.match(/(?:for|employee:?)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/i);
+      const employee = nameMatch ? nameMatch[1] : "";
+
+      const resp = await fetch("/api/generate-excel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ raw, period, employee, department: "" }),
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        alert(err.error || "Failed to generate Excel file.");
+        return;
       }
-      XLSX.utils.book_append_sheet(wb, ws, name);
-    });
-    const fileName = (raw.match(/["']([\w\s-]+\.xlsx)["']/i)?.[1]) || "OKR_Template.xlsx";
-    XLSX.writeFile(wb, fileName);
-    setDone(true);
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${period.replace(/\s+/g,"_")}_OKRs.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setDone(true);
+    } catch(e) {
+      alert("Error generating Excel: " + e.message);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <button onClick={download} style={{
@@ -281,7 +303,7 @@ function ExcelDownloadButton({ raw }) {
       <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
       </svg>
-      {done ? "Downloaded!" : "Download Excel file"}
+      {loading ? "Generating..." : done ? "Downloaded!" : "Download Excel file"}
     </button>
   );
 }
