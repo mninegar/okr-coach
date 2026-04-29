@@ -162,18 +162,21 @@ async function extractDOCX(file) {
 async function extractXLSX(file) {
   if (typeof XLSX==="undefined") throw new Error("SheetJS unavailable");
   const wb=XLSX.read(await file.arrayBuffer(),{type:"array"});
-  let t=`WORKBOOK: ${wb.SheetNames.length} sheets\n`;
+  const sheetCount=wb.SheetNames.length;
+  // Per-sheet budget: 40k total chars split evenly, min 2500 per sheet
+  const budget=Math.max(2500,Math.floor(40000/sheetCount));
+  let t=`WORKBOOK: ${sheetCount} sheets\n`;
   wb.SheetNames.forEach(n=>{
     const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:""});
     const s=rows.filter(r=>r.some(c=>String(c).trim())).map(r=>r.map(c=>String(c)).filter(c=>c.trim()).join(" | ")).join("\n");
     if (!s.trim()) return;
-    // Label sheet type to help the model understand context
     const nl=n.toLowerCase();
-    const isStrategy = nl.includes("strategy")||nl.includes("barn")||nl.includes("strategic")||nl.includes("farm")||nl.includes("pillar")||nl.includes("2026-2028")||nl.includes("2025-2027");
-    const isTeamOKR  = nl.includes("team")||nl.includes("p&c")||nl.includes("dept")||nl.includes("department");
-    const isPersonal = /\b(h1|h2|1h|2h)\s*20\d\d\b/i.test(n)||nl.includes("individual");
-    const label = isStrategy?"[TEAM/DEPT STRATEGY - 1-3 year plan]":isTeamOKR?"[TEAM OKRs]":isPersonal?"[INDIVIDUAL OKRs]":"[DATA]";
-    t+=`\n--- Sheet: ${n} ${label} ---\n${s}`;
+    const isStrategy=nl.includes("strategy")||nl.includes("barn")||nl.includes("strategic")||nl.includes("farm")||nl.includes("pillar")||nl.includes("2026-2028")||nl.includes("2025-2027");
+    const isTeamOKR=nl.includes("team")||nl.includes("p&c")||nl.includes("dept")||nl.includes("department");
+    const isPersonal=/\b(h1|h2|1h|2h)\s*20\d\d\b/i.test(n)||nl.includes("individual");
+    const label=isStrategy?"[TEAM/DEPT STRATEGY - 1-3 year plan]":isTeamOKR?"[TEAM OKRs]":isPersonal?"[INDIVIDUAL OKRs]":"[DATA]";
+    const out=s.length>budget?s.substring(0,budget)+"\n[...sheet truncated]":s;
+    t+=`\n--- Sheet: ${n} ${label} ---\n${out}`;
   });
   return t.trim();
 }
@@ -330,7 +333,7 @@ export default function OKRCoach() {
     setDocOk(false);setDrag(false);
     try{
       const text=await parseFile(file);if(!text||text.length<20)throw new Error("Document appears empty.");
-      const words=text.split(/\s+/).filter(Boolean).length,trimmed=text.substring(0,15000);
+      const words=text.split(/\s+/).filter(Boolean).length,trimmed=text.substring(0,40000);
       setDocText(trimmed);setDocName(file.name);setDocWords(words);
       const m=text.match(/WORKBOOK:\s*(\d+)\s*sheets/);setDocSheets(m?parseInt(m[1],10):null);setDocOk(true);
       callAPI(`ATTACHED DOCUMENT: "${file.name}"\n\nContent:\n${trimmed}\n\n---\n\nI just attached "${file.name}". Please acknowledge and tell me what you can see.`,`Attached: ${file.name}`,history,null,null);
