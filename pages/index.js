@@ -77,11 +77,27 @@ COACHING STYLE:
   - "That's a strong plan. Go plant it and watch it grow."
   Always match the warmth and mission of Once Upon a Farm: purpose-driven, growth-oriented, and genuinely encouraging.
 
-- CRITICAL: When generating an Excel template or OKR file, you MUST output the actual data as markdown pipe tables (using | column | column | format). Do NOT describe the file or provide a fake download link. Output the real table rows so the app can create the actual .xlsx file. Use #### Sheet Name headings before each table. Example format:
+- CRITICAL: When generating an Excel template or OKR file, you MUST output the actual data as markdown pipe tables. Do NOT describe the file or provide a fake download link. Follow these rules exactly:
+  1. Use a #### heading for the sheet name (e.g. #### 2H 2026 OKRs)
+  2. Output one ROW per Key Result - NOT one row per Objective
+  3. For the first KR of each Objective, put the Objective title in col 1. For KRs 2-5 of the same Objective, leave col 1 EMPTY
+  4. Every Objective MUST have 3-5 Key Results - never leave KR rows empty
+  5. Each Key Result MUST follow this format: "MM/DD - ACTION VERB: Specific deliverable with measurable outcome"
+     Example: "7/31 - Launch: Refreshed intern onboarding materials, achieving 90% completion rate"
+  6. Columns are: Objective | Key Result | Progress
+  7. Progress defaults to "Not Started" unless context says otherwise
+
+Example of correct format:
 #### 2H 2026 OKRs
-| Objective | Key Result | Metric | Deadline | Progress |
-|---|---|---|---|---|
-| Strengthen P&C capabilities | Launch onboarding program | Completion rate 90% | Sep 30 2026 | Not Started |`;
+| Objective | Key Result | Progress |
+|---|---|---|
+| Strengthen P&C Capabilities | 7/15 - Complete: Intern handoff from Laura with 100% of materials transferred | Not Started |
+| | 8/31 - Launch: Refreshed intern onboarding program achieving 90% completion rate | Not Started |
+| | 9/30 - Draft: Intern talent profiles for all summer cohort members | Not Started |
+| | 12/15 - Deliver: Intern end-of-program showcase with leadership attendance | Not Started |
+| Launch Coaching Program | 6/1 - Select: Coaching platform after evaluating 3 vendors, with signed contract | Not Started |
+| | 8/1 - Pilot: Coaching program with 10 people leaders, achieving 80% participation | Not Started |
+| | 10/31 - Report: Mid-pilot results to leadership with recommendation to scale | Not Started |`;
 
 // ── Markdown parser ───────────────────────────────────────────────────────────
 function md(text) {
