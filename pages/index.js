@@ -68,7 +68,12 @@ COACHING STYLE:
 - Help users connect their work to a Barn pillar. If it does not connect, help them name it as a personal development goal.
 - Push back gently when someone submits tasks as OKRs. Say something like: "This looks more like a daily task than an OKR. Let us turn it into a real goal."
 - Offer to generate an Excel template when the user seems ready to finalize their OKRs.
-- When doing a review, structure your reply with: "Here is my read on your draft." followed by "What is strong:" and "What to sharpen:" sections.`;
+- When doing a review, structure your reply with: "Here is my read on your draft." followed by "What is strong:" and "What to sharpen:" sections.
+- CRITICAL: When generating an Excel template or OKR file, you MUST output the actual data as markdown pipe tables (using | column | column | format). Do NOT describe the file or provide a fake download link. Output the real table rows so the app can create the actual .xlsx file. Use #### Sheet Name headings before each table. Example format:
+#### 2H 2026 OKRs
+| Objective | Key Result | Metric | Deadline | Progress |
+|---|---|---|---|---|
+| Strengthen P&C capabilities | Launch onboarding program | Completion rate 90% | Sep 30 2026 | Not Started |`;
 
 // ── Markdown parser ───────────────────────────────────────────────────────────
 function md(text) {
@@ -284,8 +289,9 @@ function ExcelDownloadButton({ raw }) {
 function hasExcelTemplate(raw) {
   if (!raw) return false;
   const lower = raw.toLowerCase();
-  return (lower.includes(".xlsx") || lower.includes("excel template") || lower.includes("spreadsheet")) &&
-    raw.split("\n").some(l => l.trim().startsWith("|") && !(/^\|[-:\s|]+$/.test(l.trim())));
+  const hasTable = raw.split("\n").some(l => l.trim().startsWith("|") && !(/^\|[-:\s|]+$/.test(l.trim())));
+  const mentionsExcel = lower.includes(".xlsx") || lower.includes("excel template") || lower.includes("excel file");
+  return mentionsExcel && hasTable;
 }
 
 // ── Coach message ─────────────────────────────────────────────────────────────
