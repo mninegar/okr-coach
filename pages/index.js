@@ -230,7 +230,7 @@ function parseMarkdownTables(text) {
     const tableLines = block.split("\n").filter(l => l.trim().startsWith("|"));
     if (tableLines.length < 2) return;
     const rows = tableLines
-      .filter(l => !/^\|[-:\s|]+$/.test(l.trim()))
+      .filter(l => !/^\|[\s\-:|]+\|/.test(l.trim()))
       .map(l => l.replace(/^\||\|$/g, "").split("|").map(c => c.trim()));
     if (rows.length > 0) sheets.push({ name: sheetName, rows });
   });
@@ -238,7 +238,7 @@ function parseMarkdownTables(text) {
   if (sheets.length === 0) {
     const tableLines = text.split("\n").filter(l => l.trim().startsWith("|"));
     const rows = tableLines
-      .filter(l => !/^\|[-:\s|]+$/.test(l.trim()))
+      .filter(l => !/^\|[\s\-:|]+\|/.test(l.trim()))
       .map(l => l.replace(/^\||\|$/g, "").split("|").map(c => c.trim()));
     if (rows.length > 1) sheets.push({ name: "OKRs", rows });
   }
@@ -288,10 +288,15 @@ function ExcelDownloadButton({ raw }) {
 
 function hasExcelTemplate(raw) {
   if (!raw) return false;
+  const lines = raw.split("\n");
+  // Data rows = pipe lines that are NOT separator lines like |---|---|
+  const dataRows = lines.filter(l => l.trim().startsWith("|") && !(/^\|[\s\-:|]+\|/.test(l.trim())));
+  // Show download button if there are 3+ data rows (a real table, not a one-liner)
+  // Either paired with a #### sheet heading, or with any excel/okr/template mention
+  const hasSheetHeading = lines.some(l => /^#{1,4}\s/.test(l.trim()));
   const lower = raw.toLowerCase();
-  const hasTable = raw.split("\n").some(l => l.trim().startsWith("|") && !(/^\|[-:\s|]+$/.test(l.trim())));
-  const mentionsExcel = lower.includes(".xlsx") || lower.includes("excel template") || lower.includes("excel file");
-  return mentionsExcel && hasTable;
+  const mentionsTemplate = lower.includes(".xlsx") || lower.includes("excel") || lower.includes("template") || lower.includes("okr");
+  return dataRows.length >= 3 && (hasSheetHeading || mentionsTemplate);
 }
 
 // ── Coach message ─────────────────────────────────────────────────────────────
