@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Head from "next/head";
 
 const FONT = "'Nunito', 'NeueKabel', sans-serif";
@@ -215,6 +215,79 @@ function ReviewBlock({ kind, title, rawContent }) {
   );
 }
 
+// ── Excel download from markdown tables ──────────────────────────────────────
+function parseMarkdownTables(text) {
+  const sheets = [];
+  const blocks = text.split(/\n(?=####\s)/);
+  blocks.forEach(block => {
+    const titleMatch = block.match(/^####\s+(.+)/);
+    const sheetName = titleMatch ? titleMatch[1].replace(/[:\\/?*\[\]]/g, "").slice(0, 31) : "Sheet1";
+    const tableLines = block.split("\n").filter(l => l.trim().startsWith("|"));
+    if (tableLines.length < 2) return;
+    const rows = tableLines
+      .filter(l => !/^\|[-:\s|]+$/.test(l.trim()))
+      .map(l => l.replace(/^\||\|$/g, "").split("|").map(c => c.trim()));
+    if (rows.length > 0) sheets.push({ name: sheetName, rows });
+  });
+  // fallback: single sheet from any table in the message
+  if (sheets.length === 0) {
+    const tableLines = text.split("\n").filter(l => l.trim().startsWith("|"));
+    const rows = tableLines
+      .filter(l => !/^\|[-:\s|]+$/.test(l.trim()))
+      .map(l => l.replace(/^\||\|$/g, "").split("|").map(c => c.trim()));
+    if (rows.length > 1) sheets.push({ name: "OKRs", rows });
+  }
+  return sheets;
+}
+
+function ExcelDownloadButton({ raw }) {
+  const [done, setDone] = React.useState(false);
+  const download = () => {
+    if (typeof XLSX === "undefined") { alert("Excel library not loaded yet - please wait a moment and try again."); return; }
+    const sheets = parseMarkdownTables(raw);
+    if (sheets.length === 0) { alert("No table data found to export."); return; }
+    const wb = XLSX.utils.book_new();
+    sheets.forEach(({ name, rows }) => {
+      const ws = XLSX.utils.aoa_to_sheet(rows);
+      // Style header row green
+      const range = XLSX.utils.decode_range(ws["!ref"] || "A1");
+      for (let c = range.s.c; c <= range.e.c; c++) {
+        const cell = ws[XLSX.utils.encode_cell({ r: 0, c })];
+        if (cell) {
+          cell.s = { fill: { fgColor: { rgb: "4CB74A" } }, font: { bold: true, color: { rgb: "FFFFFF" } } };
+        }
+      }
+      XLSX.utils.book_append_sheet(wb, ws, name);
+    });
+    const fileName = (raw.match(/["']([\w\s-]+\.xlsx)["']/i)?.[1]) || "OKR_Template.xlsx";
+    XLSX.writeFile(wb, fileName);
+    setDone(true);
+  };
+  return (
+    <button onClick={download} style={{
+      marginTop: 14, display: "inline-flex", alignItems: "center", gap: 8,
+      padding: "9px 16px", borderRadius: 20,
+      background: done ? Tk.sproutSoft : Tk.sprout,
+      border: `1px solid ${done ? Tk.sprout : Tk.moss}`,
+      color: done ? Tk.moss : Tk.white,
+      fontFamily: FONT, fontSize: 13, fontWeight: 700, cursor: "pointer",
+      transition: "all 0.15s",
+    }}>
+      <svg viewBox="0 0 24 24" width={14} height={14} fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      {done ? "Downloaded!" : "Download Excel file"}
+    </button>
+  );
+}
+
+function hasExcelTemplate(raw) {
+  if (!raw) return false;
+  const lower = raw.toLowerCase();
+  return (lower.includes(".xlsx") || lower.includes("excel template") || lower.includes("spreadsheet")) &&
+    raw.split("\n").some(l => l.trim().startsWith("|") && !(/^\|[-:\s|]+$/.test(l.trim())));
+}
+
 // ── Coach message ─────────────────────────────────────────────────────────────
 function CoachMsg({ html: htmlContent, raw, isTyping, chips, onChip }) {
   const review = raw ? parseReview(raw) : null;
@@ -249,6 +322,7 @@ function CoachMsg({ html: htmlContent, raw, isTyping, chips, onChip }) {
         <div style={{ background: Tk.paper, border: `0.5px solid ${Tk.line}`, borderRadius: "4px 18px 18px 18px", padding: "14px 18px", fontSize: 14, lineHeight: 1.7, color: Tk.ink2 }}
           dangerouslySetInnerHTML={{ __html: htmlContent || "" }} />
       )}
+      {hasExcelTemplate(raw) && <ExcelDownloadButton raw={raw} />}
       {chips && chips.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
           {chips.map(({ label, msg }) => (
