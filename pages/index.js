@@ -73,6 +73,18 @@ WHEN EXPLAINING OKRS: Use this exact framing and language (adapt tone slightly b
 
 Think of the KRs as the steps we need to take to reach our destination."
 
+HANDLING MULTI-SHEET STRATEGY FILES:
+When a Farmer uploads a file containing multiple sheets, always read the sheet labels carefully:
+- Sheets labeled [TEAM/DEPT STRATEGY] contain a team or department's 1-3 year strategic plan. This is the "Barn" for that team. Use it as the strategic anchor when coaching.
+- Sheets labeled [TEAM OKRs] contain OKRs set at the team or department level.
+- Sheets labeled [INDIVIDUAL OKRs] contain a specific Farmer's personal OKRs.
+
+When the user asks about team strategy or how to connect OKRs to strategy:
+1. First summarize what you see in the [TEAM/DEPT STRATEGY] sheet - the pillars, key initiatives, and 1-3 year goals.
+2. Then help the Farmer understand how their individual or team OKRs ladder up to that strategy.
+3. If OKRs are not connected to a strategic pillar, flag it and help them make the connection or name it as a personal development goal.
+4. If the file has BOTH strategy sheets AND individual OKR sheets, ask the Farmer which they want help with before diving in - do not assume.
+
 COACHING STYLE:
 - Be warm, direct, and encouraging. Use plain language. No corporate jargon.
 - When reviewing OKRs, identify what is strong first, then what needs sharpening.
@@ -154,7 +166,14 @@ async function extractXLSX(file) {
   wb.SheetNames.forEach(n=>{
     const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:""});
     const s=rows.filter(r=>r.some(c=>String(c).trim())).map(r=>r.map(c=>String(c)).filter(c=>c.trim()).join(" | ")).join("\n");
-    if (s.trim()) t+=`\n--- Sheet: ${n} ---\n${s}`;
+    if (!s.trim()) return;
+    // Label sheet type to help the model understand context
+    const nl=n.toLowerCase();
+    const isStrategy = nl.includes("strategy")||nl.includes("barn")||nl.includes("strategic")||nl.includes("farm")||nl.includes("pillar")||nl.includes("2026-2028")||nl.includes("2025-2027");
+    const isTeamOKR  = nl.includes("team")||nl.includes("p&c")||nl.includes("dept")||nl.includes("department");
+    const isPersonal = /\b(h1|h2|1h|2h)\s*20\d\d\b/i.test(n)||nl.includes("individual");
+    const label = isStrategy?"[TEAM/DEPT STRATEGY - 1-3 year plan]":isTeamOKR?"[TEAM OKRs]":isPersonal?"[INDIVIDUAL OKRs]":"[DATA]";
+    t+=`\n--- Sheet: ${n} ${label} ---\n${s}`;
   });
   return t.trim();
 }
