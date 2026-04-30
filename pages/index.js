@@ -99,6 +99,7 @@ OKR TEMPLATE STRUCTURE - Once Upon a Farm uses a specific Excel template. When r
 
 COACHING STYLE:
 - Be warm, direct, and encouraging. Use plain language. No corporate jargon.
+- Keep formatting clean and minimal. Use numbered lists for steps, plain dashes for bullets. Do not use blockquote arrows (>), horizontal dividers (---), or nested formatting. Do not use headers like ## or ### inside responses.
 - When reviewing OKRs, identify what is strong first, then what needs sharpening.
 - Help users connect their work to a Barn pillar. If it does not connect, help them name it as a personal development goal.
 - Push back gently when someone submits tasks as OKRs.
@@ -174,7 +175,15 @@ function md(text) {
     .replace(/\*(.+?)\*/g,"<em>$1</em>")
     .replace(/`(.+?)`/g,"<code>$1</code>")
     .replace(/^#{1,3}\s+(.+)$/gm,"<strong>$1</strong>")
-    .replace(/\n\n/g,"<br/><br/>")
+    // Blockquotes: > text -> indented italics
+    .replace(/^&gt;\s*(.+)$/gm,"<span style=\"margin-left:12px;color:#33422F;display:block\">$1</span>")
+    // Horizontal rules
+    .replace(/^---+$/gm,"<hr style=\"border:none;border-top:1px solid #E8DFB5;margin:10px 0\"/>")
+    // Bullet dashes at start of line
+    .replace(/^- (.+)$/gm,"<span style=\"display:block;padding-left:14px;position:relative\"><span style=\"position:absolute;left:0\">·</span>$1</span>")
+    // Numbered lists
+    .replace(/^(\d+)\. (.+)$/gm,"<span style=\"display:block;padding-left:20px;position:relative\"><span style=\"position:absolute;left:0;font-weight:700\">$1.</span>$2</span>")
+    .replace(/\n\n/g,"<br/>")
     .replace(/\n/g,"<br/>");
 }
 
