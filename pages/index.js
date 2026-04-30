@@ -100,6 +100,8 @@ OKR TEMPLATE STRUCTURE - Once Upon a Farm uses a specific Excel template. When r
 COACHING STYLE:
 - Be warm, direct, and encouraging. Use plain language. No corporate jargon.
 - Keep formatting clean and minimal. Use numbered lists for steps, plain dashes for bullets. Do not use blockquote arrows (>), horizontal dividers (---), or nested formatting. Do not use headers like ## or ### inside responses.
+- Keep first responses focused and conversational - no more than 3-4 key points or steps. Do not front-load everything you know. Give the most useful insight first, then ask a follow-up question or offer to go deeper. Save detail for when the Farmer asks for it.
+- Never end a response with a long list of options. Offer one clear next step or one focused question.
 - When reviewing OKRs, identify what is strong first, then what needs sharpening.
 - Help users connect their work to a Barn pillar. If it does not connect, help them name it as a personal development goal.
 - Push back gently when someone submits tasks as OKRs.
@@ -169,22 +171,68 @@ Every Objective MUST have at least 3 KRs. Never output fewer than 3 KRs per Obje
 
 function md(text) {
   if (!text) return "";
-  return text
+  // Process line by line for proper list grouping
+  const lines = text
     .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
     .replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
     .replace(/\*(.+?)\*/g,"<em>$1</em>")
     .replace(/`(.+?)`/g,"<code>$1</code>")
-    .replace(/^#{1,3}\s+(.+)$/gm,"<strong>$1</strong>")
-    // Blockquotes: > text -> indented italics
-    .replace(/^&gt;\s*(.+)$/gm,"<span style=\"margin-left:12px;color:#33422F;display:block\">$1</span>")
-    // Horizontal rules
-    .replace(/^---+$/gm,"<hr style=\"border:none;border-top:1px solid #E8DFB5;margin:10px 0\"/>")
-    // Bullet dashes at start of line
-    .replace(/^- (.+)$/gm,"<span style=\"display:block;padding-left:14px;position:relative\"><span style=\"position:absolute;left:0\">·</span>$1</span>")
-    // Numbered lists
-    .replace(/^(\d+)\. (.+)$/gm,"<span style=\"display:block;padding-left:20px;position:relative\"><span style=\"position:absolute;left:0;font-weight:700\">$1.</span>$2</span>")
-    .replace(/\n\n/g,"<br/>")
-    .replace(/\n/g,"<br/>");
+    .split("\n");
+
+  let html = "";
+  let prevWasList = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      // Blank line = paragraph break
+      html += prevWasList
+        ? "<div style=\"margin-bottom:10px\"></div>"
+        : "<div style=\"margin-bottom:12px\"></div>";
+      prevWasList = false;
+      continue;
+    }
+
+    // Heading
+    if (/^#{1,3}\s+/.test(trimmed)) {
+      html += `<div style="font-weight:700;margin:14px 0 6px">${trimmed.replace(/^#+\s+/,"")}</div>`;
+      prevWasList = false;
+      continue;
+    }
+
+    // Horizontal rule
+    if (/^---+$/.test(trimmed)) {
+      html += `<hr style="border:none;border-top:1px solid #E8DFB5;margin:12px 0"/>`;
+      prevWasList = false;
+      continue;
+    }
+
+    // Numbered list item
+    const numMatch = trimmed.match(/^(\d+)[\.\)] (.+)/);
+    if (numMatch) {
+      html += `<div style="display:flex;gap:8px;margin-bottom:6px"><span style="font-weight:700;flex-shrink:0">${numMatch[1]}.</span><span>${numMatch[2]}</span></div>`;
+      prevWasList = true;
+      continue;
+    }
+
+    // Bullet dash
+    const bulletMatch = trimmed.match(/^[-•] (.+)/);
+    if (bulletMatch) {
+      html += `<div style="display:flex;gap:8px;margin-bottom:4px;padding-left:8px"><span style="flex-shrink:0;color:#4CB74A">·</span><span>${bulletMatch[1]}</span></div>`;
+      prevWasList = true;
+      continue;
+    }
+
+    // Plain text
+    html += `<span>${trimmed}</span>`;
+    if (i < lines.length - 1 && lines[i+1].trim()) html += " ";
+    else html += "<br/>";
+    prevWasList = false;
+  }
+
+  return html.trim();
 }
 
 function parseReview(raw) {
