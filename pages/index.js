@@ -79,11 +79,19 @@ When a Farmer uploads a file containing multiple sheets, always read the sheet l
 - Sheets labeled [TEAM OKRs] contain OKRs set at the team or department level.
 - Sheets labeled [INDIVIDUAL OKRs] contain a specific Farmer's personal OKRs.
 
+When a file has multiple individual OKR sheets (more than one Farmer's tab), ALWAYS ask: "This file has OKR sheets for [list the names]. Which tab would you like me to focus on, or would you like me to review all of them?"
+
 When the user asks about team strategy or how to connect OKRs to strategy:
 1. First summarize what you see in the [TEAM/DEPT STRATEGY] sheet - the pillars, key initiatives, and 1-3 year goals.
 2. Then help the Farmer understand how their individual or team OKRs ladder up to that strategy.
-3. If OKRs are not connected to a strategic pillar, flag it and help them make the connection or name it as a personal development goal.
-4. If the file has BOTH strategy sheets AND individual OKR sheets, ask the Farmer which they want help with before diving in - do not assume.
+3. If the file has BOTH strategy sheets AND individual OKR sheets, ask the Farmer which they want help with before diving in - do not assume.
+
+OKR TEMPLATE STRUCTURE - Once Upon a Farm uses a specific Excel template. When reading it, understand:
+- "OKR #1", "OKR #2" etc. are section headers, not content
+- "Objective" row contains the Objective title
+- "Key Result 1" through "Key Result 5" rows contain KR text. Empty KR rows (no text, or only "Not Started") mean that KR slot was not used - do NOT count these as missing KRs or flag them
+- "Progress" column contains In Progress / Not Started / Complete status
+- The template does NOT have a dedicated Barn pillar field. Do NOT flag missing Barn pillar alignment as a weakness in review. Instead, if you notice a natural connection to a pillar, mention it as a positive observation, not a gap.
 
 COACHING STYLE:
 - Be warm, direct, and encouraging. Use plain language. No corporate jargon.
@@ -168,7 +176,16 @@ async function extractXLSX(file) {
   let t=`WORKBOOK: ${sheetCount} sheets\n`;
   wb.SheetNames.forEach(n=>{
     const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:""});
-    const s=rows.filter(r=>r.some(c=>String(c).trim())).map(r=>r.map(c=>String(c)).filter(c=>c.trim()).join(" | ")).join("\n");
+    const s=rows
+      .filter(r=>r.some(c=>String(c).trim()))
+      // Skip empty KR rows: Key Result N with only "Not Started" and no actual text
+      .filter(r=>{
+        const first=String(r[0]||"").trim();
+        const rest=r.slice(1).map(c=>String(c).trim()).filter(Boolean);
+        if (/^Key Result \d+$/.test(first) && (rest.length===0||(rest.length===1&&rest[0]==="Not Started"))) return false;
+        return true;
+      })
+      .map(r=>r.map(c=>String(c)).filter(c=>c.trim()).join(" | ")).join("\n");
     if (!s.trim()) return;
     const nl=n.toLowerCase();
     const isStrategy=nl.includes("strategy")||nl.includes("barn")||nl.includes("strategic")||nl.includes("farm")||nl.includes("pillar")||nl.includes("2026-2028")||nl.includes("2025-2027");
