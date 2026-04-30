@@ -168,7 +168,11 @@ async function extractDOCX(file) {
   return result.value.trim();
 }
 async function extractXLSX(file) {
-  if (typeof XLSX==="undefined") throw new Error("SheetJS unavailable");
+  if (typeof XLSX==="undefined") {
+    // Try waiting briefly for the CDN script to load
+    await new Promise(r=>setTimeout(r,1500));
+    if (typeof XLSX==="undefined") throw new Error("Excel reader not loaded yet. Please wait a moment and try again.");
+  }
   const wb=XLSX.read(await file.arrayBuffer(),{type:"array"});
   const sheetCount=wb.SheetNames.length;
   // Per-sheet budget: 40k total chars split evenly, min 2500 per sheet
@@ -202,8 +206,8 @@ async function parseFile(file) {
   if (ext==="pdf") return extractPDF(file);
   if (ext==="docx"||ext==="doc") return extractDOCX(file);
   if (ext==="xlsx"||ext==="xls") return extractXLSX(file);
-  if (ext==="txt") return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=()=>rej(new Error("Read failed"));r.readAsText(file);});
-  throw new Error("Unsupported file type. Try PDF, Word, Excel, or .txt");
+  if (ext==="csv"||ext==="txt") return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=()=>rej(new Error("Read failed"));r.readAsText(file);});
+  throw new Error("Unsupported file type. Try PDF, Word, Excel, CSV, or .txt");
 }
 
 function Img({k,w=18,h=18,style={}}) { return <img src={IMG[k]} alt="" style={{width:w,height:h,objectFit:"contain",...style}}/>; }
@@ -418,7 +422,7 @@ export default function OKRCoach() {
               style={{width:"100%",border:"none",background:"transparent",fontFamily:FONT,fontSize:14,color:input?Tk.ink:Tk.mutedSoft,lineHeight:1.5}}/>
             <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginTop:8}}>
               <div style={{display:"flex",gap:6,alignItems:"center"}}>
-                <input ref={fileRef} type="file" accept=".pdf,.docx,.doc,.xlsx,.xls,.txt" style={{display:"none"}} onChange={handleFile}/>
+                <input ref={fileRef} type="file" accept=".pdf,.docx,.doc,.xlsx,.xls,.csv,.txt" style={{display:"none"}} onChange={handleFile}/>
                 <button onClick={()=>fileRef.current?.click()} style={{background:"none",border:"none",cursor:"pointer",display:"flex",alignItems:"center",gap:5,color:Tk.muted,fontSize:12,fontFamily:FONT,padding:"4px 8px",borderRadius:8}}
                   onMouseEnter={e=>e.currentTarget.style.background=Tk.lineSoft}
                   onMouseLeave={e=>e.currentTarget.style.background="none"}>
