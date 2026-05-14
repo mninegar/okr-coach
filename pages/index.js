@@ -24,13 +24,13 @@ const IMG = {
 };
 
 const QUICK_STARTS = [
-  { label:"Draft new OKRs",           display:"Draft new OKRs",           img:IMG.apple_whole, msg:"I want to draft new OKRs. Please ask me what you need to get started." },
-  { label:"Refine existing",           display:"Refine existing",           img:IMG.kale_leaf,   msg:"I have OKRs already drafted and want help refining them. I will share them with you." },
-  { label:"Prep a check-in",           display:"Prep a check-in",           img:IMG.avocado,     msg:"I want to prepare for my monthly OKR check-in with my manager." },
-  { label:"Score my OKRs",             display:"Score my OKRs",             img:IMG.pumpkin,     msg:"I want to score my OKRs and get a reality check on how I am tracking." },
-  { label:"I'm a people leader",       display:"I'm a people leader",       img:IMG.kale_bunch,  msg:"I am a people leader and want help reviewing my team's OKRs and coaching my direct reports." },
-  { label:"Does this ladder to Barn?", display:"Does this ladder to Barn?", img:IMG.beet,        msg:"I want to do a quick check on whether my OKR or goal ladders up to a Barn pillar. I will share it with you." },
-  { label:"Help with something else",  display:"Help with something else",  img:IMG.banana_slice,msg:"I need help with something related to OKRs that is not listed above. Please ask me what I need." },
+  { label:"Draft new OKRs",                    display:"Draft new OKRs",                    img:IMG.apple_whole, msg:"I want to draft new OKRs. Please ask me what you need to get started." },
+  { label:"Refine existing OKRs",              display:"Refine existing OKRs",              img:IMG.kale_leaf,   msg:"I have OKRs already drafted and want help refining them. I will share them with you." },
+  { label:"Prep a check-in",                   display:"Prep a check-in",                   img:IMG.avocado,     msg:"I want to prepare for my monthly OKR check-in with my manager." },
+  { label:"Score my OKRs",                     display:"Score my OKRs",                     img:IMG.pumpkin,     msg:"I want to score my OKRs and get a reality check on how I am tracking." },
+  { label:"I'm a people leader",               display:"I'm a people leader",               img:IMG.kale_bunch,  msg:"I am a people leader and want help reviewing my team's OKRs and coaching my direct reports." },
+  { label:"Does this ladder up to The Barn?",  display:"Does this ladder up to The Barn?",  img:IMG.beet,        msg:"I want to do a quick check on whether my OKR or goal ladders up to a Barn pillar. I will share it with you." },
+  { label:"Help with something else",          display:"Help with something else",          img:IMG.banana_slice,msg:"I need help with something related to OKRs that is not listed above. Please ask me what I need." },
 ];
 
 const SYS = `You are the OKR Coach for Once Upon a Farm (OUF), a warm and knowledgeable internal coaching tool that helps Farmers (employees) and people leaders build, refine, and check in on their OKRs.
