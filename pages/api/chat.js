@@ -28,7 +28,7 @@ export default async function handler(req, res) {
           "Authorization": `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model: "mistral-small-latest",
+          model: "mistral-small-2603",
           messages: mistralMessages,
           max_tokens: 1500,
           temperature: 0.7,
